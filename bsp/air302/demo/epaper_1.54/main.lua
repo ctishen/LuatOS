@@ -1,8 +1,8 @@
 
 -- LuaTools需要PROJECT和VERSION这两个信息
 PROJECT = "taraxacum"
-VERSION = "1.1.20"
-BUILD   = 20
+VERSION = "1.1.21"
+BUILD   = 21
 PROJECT_KEY = "01kgGFLlsfAabFuwJosS4surDNWOQCVH"
 
 -- sys库是标配
@@ -18,6 +18,7 @@ _G.pm_sleep_sec = 60
 --18.增加显示界面6
 --19.界面字体重排
 --20.界面3重排
+--21.报价重排，1、2界面根据数据变动
 
 
 function getsleeptime()
@@ -283,20 +284,20 @@ function display_show(dset,bat,adc2,mycode,mydata,d1,d2,d3,d4,d5,d6)
     end
 
     if dset==1 then --显示单独行情数据
-        eink.printcn(10, 25*1, mycode, 0, 24)
+        eink.printcn(10, 15, mycode, 0, 24)
         eink.print( math.ceil( (height-string.len(tostring(mydata))*20 )/2 ), width/2-32/2, string.format("%0.2f",mydata), 0, 32)
-        DrawMultiLineString(0,height-60,20,width-8,24,d6)
+        DrawMultiLineString(0,height-80,20,width-8,16,d6)
     end
 
     if dset==2 then --显示多条行情数据
         local center_width =width-10-24-50
 
-        eink.printcn(10,  math.ceil(10+center_width/5*1), d1, 0, 24)
-        eink.printcn(10,  math.ceil(10+center_width/5*2), d2, 0, 24)
-        eink.printcn(10,  math.ceil(10+center_width/5*3), d3, 0, 24)
-        eink.printcn(10,  math.ceil(10+center_width/5*4), d4, 0, 24)
-        eink.printcn(10,  math.ceil(10+center_width/5*5), d5, 0, 24)
-        DrawMultiLineString(0,height-60,20,width-8,16,d6)
+        eink.printcn(10,  math.ceil(15+center_width/5*0), d1, 0, 24)
+        eink.printcn(10,  math.ceil(15+center_width/5*1), d2, 0, 24)
+        eink.printcn(10,  math.ceil(15+center_width/5*2), d3, 0, 24)
+        eink.printcn(10,  math.ceil(15+center_width/5*3), d4, 0, 24)
+        eink.printcn(10,  math.ceil(15+center_width/5*4), d5, 0, 24)
+        DrawMultiLineString(0,height-80,20,width-8,16,d6)
     end
 
     if dset==3 then --无标题显示
@@ -309,7 +310,7 @@ function display_show(dset,bat,adc2,mycode,mydata,d1,d2,d3,d4,d5,d6)
 
 ----尾部---------------------------------------------------------------------------
     if dset==4 then 
-        DrawMultiLineString(0,width/10*8,width/10,height-8,16,d1..' '..d2)
+        DrawMultiLineString(0,width/10*8,width/10,height,16,string.sub(d1, 1, 14)..' '..string.sub(d2, 1, 14))
     end
 
     eink.show()
@@ -526,12 +527,12 @@ sys.taskInit(function()
                             
                             local _,info =fs_read_rate()
                             --log.info("rate,info",rate,info)
-                            if info ~=sn or pm.lastReson() == 0 then
+                            if info ~=sn or pm.lastReson() == 0 or cfg==1 or cfg==2 then
                                 display_show(cfg,bat,adc2,mydata[sy1]["cnName"],mydata[sy1]["data"],display1,display2,display3,display4,display5,display6)
                                 local curH=tonumber(os.date("%H",os.time()))
                                 local curM=tonumber(os.date("%M",os.time()))
                                 local tm=curH*60+curM
-                                log.info("mytime", "shenyang", tm)
+                                log.info("mytime", "shenyang", tm,cfg)
                                 --0-6点时间休眠
                                 if(tonumber(curH)>=0 and tonumber(curH)<6 and rate<(48*60) ) then
                                     rate =6*60-tonumber(tm)
