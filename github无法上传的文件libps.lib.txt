@@ -1,0 +1,1 @@
+C:\tmp\LuatOS_BETA\bsp\air302\air302_sdk\PLAT\prebuild\PS\lib\keil
